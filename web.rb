@@ -1,52 +1,46 @@
-%w(json sinatra wordnik youtube_it).each {|lib| require lib}
+%w( nokogiri open-uri sinatra ).each {|lib| require lib}
 
-APP_CONFIG = YAML.load(File.open("./config/app_config.yml")) if FileTest.exists?("./config/app_config.yml")
+class Doc
 
-Wordnik.configure do |config|
-    config.api_key = ENV['WORDNIK_KEY'] || APP_CONFIG['wordnik_key']
-end
-
-class Comment
-  attr_accessor :id, :author, :body, :title, :video_id
+  # @approved = %w()
 
   def initialize
-    videos = search_for_videos(random_word) while videos.nil? || videos.length < 1
-    while @comment.nil?
-      video = videos.sample
-      @comment = get_comment(video.unique_id) 
-    end
-
-    @id, @author = @comment.url.split(":").last, @comment.author.name
-    @body, @title =  @comment.content, @comment.title
-    @video_id = video.unique_id
+    # until (@approved & doc.categories).length > 0
+      doc
+    # end
   end
 
-  def client
-    @client ||= YouTubeIt::Client.new
+  def doc
+    @doc ||= random_page
   end
 
-  def get_comment(video_id)
-    client.comments(video_id).sample
+  def new_doc
+    @doc = random_page
   end
 
-  def random_word
-    Wordnik.words.get_random_word(:hasDictionaryDef => 'true')["word"]
+  def random_page
+    @sites = %w( http://en.wikipedia.org/wiki/Category:National_Toy_Hall_of_Fame_inductees http://en.wikipedia.org/wiki/Category:Technology http://en.wikipedia.org/wiki/Category:Packaging http://en.wikipedia.org/wiki/Category:Animals_described_in_1758 http://en.wikipedia.org/wiki/Category:Simple_machines http://en.wikipedia.org/wiki/Category:Weapons http://en.wikipedia.org/wiki/Category:American_cuisine http://en.wikipedia.org/wiki/Category:Traditional_Chinese_objects http://en.wikipedia.org/wiki/Category:String_instruments http://en.wikipedia.org/wiki/Category:Creativity http://en.wikipedia.org/wiki/Category:American_inventions )
+    # Nokogiri::HTML(open("http://en.wikipedia.org/wiki/Special:Random/"))
+    Nokogiri::HTML(open(@sites.sample))
   end
 
-  def search_for_videos(word)
-    client.videos_by(query: word).videos
+  def random_title
+    doc.css('#mw-pages ul li a').map{|a| a["title"]}.sample
+  end
+
+  def title
+    # @doc.css('title').children.first.content.split(' - Wikipedia, the free encyclopedia').first
+  end
+
+  def categories
+    @doc.css("#catlinks div ul li a").map{ |a| a.attributes["title"].value.split("Category:").last.downcase }
   end
 end
 
 # Routes
 get '/' do
-  @comment = Comment.new
-  if request.accept[0] == "application/json"
-    content_type :json
-    { author: @comment.author, comment: @comment.body,
-      comment_id: @comment.id, title: @comment.title,
-      video_id: @video.unique_id }.to_json
-  else
-    erb :index
-  end
+  @first = Doc.new.random_title
+  @second = Doc.new.random_title
+
+  erb :index
 end

@@ -1,37 +1,41 @@
-<h1>All Ideas</h1>
-  <table class='table table-condensed table-striped'>
-    <thead>
-      <tr>
-        <th>Idea</th>
-        <th>Categories</th>
-        <th>Score</th>
-        <th colspan='2'>Vote</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @ideas.each do |idea| %>
-      <tr>
-        <td><%= idea[:idea] %></td>
-        <td><%= idea[:categories] %></td>
-        <td><%= idea[:score] %></td>
-        <td>
-          <form action="/" method="post" class="form-inline" style="margin: 0">
-            <input type="hidden" name="vote" value= "up">
-            <input type="hidden" name="idea" value= "<%= idea[:idea] %>">
-            <input type="hidden" name="categories" value= "<%= idea[:categories] %>">
-            <input type="submit" value="Upvote">
-          </form>
-        </td>
-        <td>
-          <form action="/" method="post" class="form-inline" style="margin: 0">
-            <input type="hidden" name="vote" value= "down">
-            <input type="hidden" name="idea" value= "<%= idea[:idea] %>">
-            <input type="hidden" name="categories" value= "<%= idea[:categories] %>">
-            <input type="submit" value="Downvote">
-          </form>
-        </td>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>
-  <p><a href="/random" class="btn btn-primary">New Idea</a></p>
+<div class='page-header'>
+  <h1>All Ideas</h1>
+</div>
+
+
+<table class='table table-condensed table-striped'>
+  <thead>
+    <tr>
+      <th>Idea</th>
+      <th>Categories</th>
+      <th>Score</th>
+      <th colspan='2'>Vote</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @ideas.each do |idea| %>
+    <tr>
+      <td><%= idea[:idea] %></td>
+      <td><%= idea[:categories] %></td>
+      <td><%= idea[:score] %></td>
+      <td>
+        <form action="/" method="post" class="form-inline" style="margin: 0">
+          <input type="hidden" name="vote" value= "up">
+          <input type="hidden" name="idea" value= "<%= idea[:idea] %>">
+          <input type="hidden" name="categories" value= "<%= idea[:categories] %>">
+          <input type="submit" value="Upvote">
+        </form>
+      </td>
+      <td>
+        <form action="/" method="post" class="form-inline" style="margin: 0">
+          <input type="hidden" name="vote" value= "down">
+          <input type="hidden" name="idea" value= "<%= idea[:idea] %>">
+          <input type="hidden" name="categories" value= "<%= idea[:categories] %>">
+          <input type="submit" value="Downvote">
+        </form>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+<p><a href="/random" class="btn btn-primary">New Idea</a></p>

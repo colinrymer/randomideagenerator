@@ -9,15 +9,19 @@ class RandomPage
   end
 
   def doc
-    @doc ||= Nokogiri::HTML(open("http://en.wikipedia.org/wiki/Category:#{@pool.sample}"))
+    @doc ||= Nokogiri::HTML(open(url))
   end
 
   def title
-    @title ||= doc.css('#mw-pages ul li a').map{|a| a["title"]}.sample.downcase
+    @title ||= doc.css('#mw-pages ul li a').map{|a| "<a href='http://en.wikipedia.org#{a['href']}'>#{a['title'].gsub(/\(.+\)/, '').downcase}</a>" }.sample
   end
 
   def category
-    @category ||= @doc.css('title').children.first.content.split(' - Wikipedia, the free encyclopedia').first.split('Category:').last
+    @category ||= "<a href='#{url}'>#{doc.css('title').children.first.content.split(' - Wikipedia, the free encyclopedia').first.split('Category:').last}</a>"
+  end
+
+  def url
+    @url ||= "http://en.wikipedia.org/wiki/Category:#{@pool.sample}"
   end
 end
 

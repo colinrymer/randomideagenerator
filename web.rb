@@ -1,44 +1,6 @@
 %w( json nokogiri open-uri redis sinatra ).each {|lib| require lib}
+%w( categories randompage ideagenerator ).each {|lib| require "./lib/#{lib}" }
 
-CATEGORIES = %w(National_Toy_Hall_of_Fame_inductees Technology Packaging Animals_described_in_1758 Simple_machines Weapons American_cuisine Traditional_Chinese_objects String_instruments Creativity American_inventions)
-
-class RandomPage
-  def initialize(pool)
-      @pool = pool
-      doc
-  end
-
-  def doc
-    @doc ||= Nokogiri::HTML(open(url))
-  end
-
-  def title
-    @title ||= doc.css('#mw-pages ul li a').map{|a| "<a href='http://en.wikipedia.org#{a['href']}'>#{a['title'].gsub(/\(.+\)/, '').downcase}</a>" }.sample
-  end
-
-  def category
-    @category ||= "<a href='#{url}'>#{doc.css('title').children.first.content.split(' - Wikipedia, the free encyclopedia').first.split('Category:').last}</a>"
-  end
-
-  def url
-    @url ||= "http://en.wikipedia.org/wiki/Category:#{@pool.sample}"
-  end
-end
-
-class IdeaGenerator
-  def initialize(categories)
-    @first = RandomPage.new(categories)
-    @second = RandomPage.new(categories)
-  end
-
-  def idea
-    "#{@first.title} #{@second.title}"
-  end
-
-  def categories
-    "#{@first.category} | #{@second.category}"
-  end
-end
 
 if ENV["REDISTOGO_URL"]
   uri = URI.parse(ENV["REDISTOGO_URL"])
@@ -47,25 +9,37 @@ else
   redis = Redis.new
 end
 
+def new_idea
+  IdeaGenerator.new(CATEGORIES)
+end
+
+def get_ideas
+  redis.zrevrangebyscore(:ideas, '+inf', '-inf', withscores: true).map{|idea| { idea: JSON.parse(idea.first)['idea'], categories: JSON.parse(idea.first)['categories'], score: idea.last } }
+end
+
+def update_idea(amount, idea_hash)
+  redis.zincrby(:ideas, amount, { idea: idea_hash['idea'], categories: idea_hash['categories'] }.to_json)
+end
+
 # Routes
 get '/' do
-  @ideas = redis.zrevrangebyscore(:ideas, '+inf', '-inf', withscores: true).map{|idea| { idea: JSON.parse(idea.first)['idea'], categories: JSON.parse(idea.first)['categories'], score: idea.last } }
+  @ideas = get_ideas
   erb :index
 end
 
 post '/' do
-  redis.zincrby(:ideas, (params['vote'] == 'up' ? 1 : -1), { idea: params['idea'], categories: params['categories'] }.to_json)
-  @ideas = redis.zrevrangebyscore(:ideas, '+inf', '-inf', withscores: true).map{|idea| { idea: JSON.parse(idea.first)['idea'], categories: JSON.parse(idea.first)['categories'], score: idea.last } }
+  update_idea((params['vote'] == 'up' ? 1 : -1), params)
+  @ideas = get_ideas
   erb :index
 end
 
 get '/random' do
-  @idea = IdeaGenerator.new(CATEGORIES)
+  @idea = new_idea
   erb :random
 end
 
 post '/random' do
-  redis.zincrby(:ideas, 1, { idea: params['idea'], categories: params['categories'] }.to_json)
-  @idea = IdeaGenerator.new(CATEGORIES)
+  update_idea(1, params)
+  @idea = new_idea
   erb :random
 end

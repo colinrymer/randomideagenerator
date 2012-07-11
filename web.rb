@@ -30,6 +30,11 @@ class Doc
 
   def title
     # @doc.css('title').children.first.content.split(' - Wikipedia, the free encyclopedia').first
+    @title ||= random_title
+  end
+
+  def category
+    @category ||= @doc.css('title').children.first.content.split(' - Wikipedia, the free encyclopedia').first.split('Category:').last
   end
 
   def categories
@@ -39,8 +44,8 @@ end
 
 # Routes
 get '/' do
-  @first = Doc.new.random_title
-  @second = Doc.new.random_title
+  @first = Doc.new
+  @second = Doc.new
 
   erb :index
 end

@@ -1,51 +1,62 @@
-%w( nokogiri open-uri sinatra ).each {|lib| require lib}
+%w( json nokogiri open-uri redis sinatra ).each {|lib| require lib}
 
-class Doc
+CATEGORIES = %w(National_Toy_Hall_of_Fame_inductees Technology Packaging Animals_described_in_1758 Simple_machines Weapons American_cuisine Traditional_Chinese_objects String_instruments Creativity American_inventions)
 
-  # @approved = %w()
-
-  def initialize
-    # until (@approved & doc.categories).length > 0
+class RandomPage
+  def initialize(pool)
+      @pool = pool
       doc
-    # end
   end
 
   def doc
-    @doc ||= random_page
-  end
-
-  def new_doc
-    @doc = random_page
-  end
-
-  def random_page
-    @sites = %w( http://en.wikipedia.org/wiki/Category:National_Toy_Hall_of_Fame_inductees http://en.wikipedia.org/wiki/Category:Technology http://en.wikipedia.org/wiki/Category:Packaging http://en.wikipedia.org/wiki/Category:Animals_described_in_1758 http://en.wikipedia.org/wiki/Category:Simple_machines http://en.wikipedia.org/wiki/Category:Weapons http://en.wikipedia.org/wiki/Category:American_cuisine http://en.wikipedia.org/wiki/Category:Traditional_Chinese_objects http://en.wikipedia.org/wiki/Category:String_instruments http://en.wikipedia.org/wiki/Category:Creativity http://en.wikipedia.org/wiki/Category:American_inventions )
-    # Nokogiri::HTML(open("http://en.wikipedia.org/wiki/Special:Random/"))
-    Nokogiri::HTML(open(@sites.sample))
-  end
-
-  def random_title
-    doc.css('#mw-pages ul li a').map{|a| a["title"]}.sample
+    @doc ||= Nokogiri::HTML(open("http://en.wikipedia.org/wiki/Category:#{@pool.sample}"))
   end
 
   def title
-    # @doc.css('title').children.first.content.split(' - Wikipedia, the free encyclopedia').first
-    @title ||= random_title
+    @title ||= doc.css('#mw-pages ul li a').map{|a| a["title"]}.sample.downcase
   end
 
   def category
     @category ||= @doc.css('title').children.first.content.split(' - Wikipedia, the free encyclopedia').first.split('Category:').last
   end
+end
+
+class IdeaGenerator
+  def initialize(categories)
+    @first = RandomPage.new(categories)
+    @second = RandomPage.new(categories)
+  end
+
+  def idea
+    "#{@first.title} #{@second.title}"
+  end
 
   def categories
-    @doc.css("#catlinks div ul li a").map{ |a| a.attributes["title"].value.split("Category:").last.downcase }
+    "#{@first.category} | #{@second.category}"
   end
 end
 
+redis = Redis.new
+
 # Routes
 get '/' do
-  @first = Doc.new
-  @second = Doc.new
-
+  @ideas = redis.zrevrangebyscore(:ideas, '+inf', '-inf', withscores: true).map{|idea| { idea: JSON.parse(idea.first)['idea'], categories: JSON.parse(idea.first)['categories'], score: idea.last } }
   erb :index
+end
+
+post '/' do
+  redis.zincrby(:ideas, (params['vote'] == 'up' ? 1 : -1), { idea: params['idea'], categories: params['categories'] }.to_json)
+  @ideas = redis.zrevrangebyscore(:ideas, '+inf', '-inf', withscores: true).map{|idea| { idea: JSON.parse(idea.first)['idea'], categories: JSON.parse(idea.first)['categories'], score: idea.last } }
+  erb :index
+end
+
+get '/random' do
+  @idea = IdeaGenerator.new(CATEGORIES)
+  erb :random
+end
+
+post '/random' do
+  redis.zincrby(:ideas, 1, { idea: params['idea'], categories: params['categories'] }.to_json)
+  @idea = IdeaGenerator.new(CATEGORIES)
+  erb :random
 end

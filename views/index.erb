@@ -5,8 +5,42 @@
   <meta name="author" content="Colin Rymer" />
 </head>
 <body>
-<h1><%= "#{@first.title} #{@second.title}" %></h1>
-<h2><%= "#{@first.category} | #{@second.category}" %></h2>
-<p><a href="/" >next</a></p>
+  <h1>All Ideas</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Idea</th>
+        <th>Categories</th>
+        <th>Score</th>
+        <th colspan='2'>Vote</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @ideas.each do |idea| %>
+      <tr>
+        <td><%= idea[:idea] %></td>
+        <td><%= idea[:categories] %></td>
+        <td><%= idea[:score] %></td>
+        <td>
+          <form action="/" method="post">
+            <input type="hidden" name="vote" value= "up">
+            <input type="hidden" name="idea" value= "<%= idea[:idea] %>">
+            <input type="hidden" name="categories" value= "<%= idea[:categories] %>">
+            <input type="submit" value="Upvote">
+          </form>
+        </td>
+        <td>
+          <form action="/" method="post">
+            <input type="hidden" name="vote" value= "down">
+            <input type="hidden" name="idea" value= "<%= idea[:idea] %>">
+            <input type="hidden" name="categories" value= "<%= idea[:categories] %>">
+            <input type="submit" value="Downvote">
+          </form>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <p><a href="/random" >new idea</a></p>
 </body>
 </html>

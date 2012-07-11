@@ -1,20 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Wiki v Wiki</title>
-  <meta name="author" content="Colin Rymer" />
-</head>
-<body>
 <h1><%= @idea.idea %></h1>
 <h2><%= @idea.categories %></h2>
-<p><a href="/random" >Vetoed</a></p>
-<p>
-  <form action="/random" method="post">
-    <input type="hidden" name="idea" value= "<%= @idea.idea %>">
-    <input type="hidden" name="categories" value= "<%= @idea.categories %>">
-    <input type="submit" value="Approved">
-  </form>
-</p>
-<p><a href="/" >Back to list</a></p>
-</body>
-</html>
+<a href="/random" class="btn btn-danger" style="display: inline-block">Vetoed</a>
+<form action="/random" method="post" class="form-inline" style="display: inline-block">
+  <input type="hidden" name="idea" value= "<%= @idea.idea %>">
+  <input type="hidden" name="categories" value= "<%= @idea.categories %>">
+  <input type="submit" value="Approved" class="btn btn-success">
+</form>
+<a href="/" >Back to list</a>

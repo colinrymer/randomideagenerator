@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Wiki v Wiki</title>
-  <meta name="author" content="Colin Rymer" />
-</head>
-<body>
-  <h1>All Ideas</h1>
-  <table>
+<h1>All Ideas</h1>
+  <table class='table table-condensed table-striped'>
     <thead>
       <tr>
         <th>Idea</th>
@@ -22,7 +15,7 @@
         <td><%= idea[:categories] %></td>
         <td><%= idea[:score] %></td>
         <td>
-          <form action="/" method="post">
+          <form action="/" method="post" class="form-inline" style="margin: 0">
             <input type="hidden" name="vote" value= "up">
             <input type="hidden" name="idea" value= "<%= idea[:idea] %>">
             <input type="hidden" name="categories" value= "<%= idea[:categories] %>">
@@ -30,7 +23,7 @@
           </form>
         </td>
         <td>
-          <form action="/" method="post">
+          <form action="/" method="post" class="form-inline" style="margin: 0">
             <input type="hidden" name="vote" value= "down">
             <input type="hidden" name="idea" value= "<%= idea[:idea] %>">
             <input type="hidden" name="categories" value= "<%= idea[:categories] %>">
@@ -41,6 +34,4 @@
     <% end %>
     </tbody>
   </table>
-  <p><a href="/random" >new idea</a></p>
-</body>
-</html>
+  <p><a href="/random" class="btn btn-primary">New Idea</a></p>

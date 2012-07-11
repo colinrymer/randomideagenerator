@@ -1,12 +1,13 @@
 %w( json nokogiri open-uri redis sinatra ).each {|lib| require lib}
 %w( categories randompage ideagenerator ).each {|lib| require "./lib/#{lib}" }
 
-
-if ENV["REDISTOGO_URL"]
-  uri = URI.parse(ENV["REDISTOGO_URL"])
-  redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
-else
-  redis = Redis.new
+def redis
+  if ENV["REDISTOGO_URL"]
+    uri = URI.parse(ENV["REDISTOGO_URL"])
+    @redis ||= Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+  else
+    @redis ||= Redis.new
+  end
 end
 
 def new_idea

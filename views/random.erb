@@ -9,12 +9,18 @@
 </div>
 <div class="row">
   <div class="span12">
-    <a id="skip" href="/random" class="btn btn-danger">Skip</a>
-    <form action="/random" method="post" class="form-inline">
+    <form action="/" method="post" class="form-inline">
+      <input type="hidden" name="direction" value= "down">
+      <input type="hidden" name="idea" value= "<%= @idea.idea %>">
+      <input type="hidden" name="categories" value= "<%= @idea.categories %>">
+      <input type="submit" value="Skip" class="btn btn-danger">
+    </form>
+    <form action="/" method="post" class="form-inline">
+      <input type="hidden" name="direction" value= "up">
       <input type="hidden" name="idea" value= "<%= @idea.idea %>">
       <input type="hidden" name="categories" value= "<%= @idea.categories %>">
       <input type="submit" value="Approve" class="btn btn-success">
     </form>
-    <a href="/" >Back to list</a>
+    <!-- <a href="/" >Back to list</a> -->
   </div>
 </div>

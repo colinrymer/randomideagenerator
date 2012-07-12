@@ -14,23 +14,26 @@ def new_idea
   IdeaGenerator.new(CATEGORIES)
 end
 
-def get_ideas
-  redis.zrevrangebyscore(:ideas, '+inf', '-inf', withscores: true).map{|idea| { idea: JSON.parse(idea.first)['idea'], categories: JSON.parse(idea.first)['categories'], score: idea.last } }
+def ideas(min, max)
+  redis.zrevrangebyscore(:ideas, max, min, withscores: true).map{|idea| { idea: JSON.parse(idea.first)['idea'], categories: JSON.parse(idea.first)['categories'], score: idea.last } }
 end
 
-def update_idea(amount, idea_hash)
-  redis.zincrby(:ideas, amount, { idea: idea_hash['idea'], categories: idea_hash['categories'] }.to_json)
+def bad_ideas
+  ideas '-inf', '0'
 end
+
+def good_ideas
+  ideas '1', '+inf'
+end
+
+def update_idea(idea_hash)
+  redis.zincrby(:ideas, (idea_hash['direction'] == 'up' ? 1 : -1), { idea: idea_hash['idea'], categories: idea_hash['categories'] }.to_json)
+end
+
 
 # Routes
 get '/' do
-  @ideas = get_ideas
-  erb :index
-end
-
-post '/' do
-  update_idea((params['vote'] == 'up' ? 1 : -1), params)
-  @ideas = get_ideas
+  @ideas = good_ideas
   erb :index
 end
 
@@ -39,8 +42,12 @@ get '/random' do
   erb :random
 end
 
-post '/random' do
-  update_idea(1, params)
-  @idea = new_idea
-  erb :random
+get '/rejects' do
+  @ideas = bad_ideas
+  erb :index
+end
+
+post '/' do
+  update_idea(params)
+  redirect request.referrer
 end

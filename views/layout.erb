@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Wiki v Wiki</title>
-  <meta name="author" content="Colin Rymer" />
+  <title>Random Idea Generator</title>
+  <meta name="author" content="Pale Dot Voyage: Colin Rymer" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
   <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+        <ul class="nav">
+          <li class="<%= 'active' if request.path == '/' %>"><a href="/">Approved</a></li>
+          <li class="<%= 'active' if request.path == '/rejects' %>"><a href="/rejects">Rejects</a></li>
+          <li class="<%= 'active' if request.path == '/random' %>"><a href="/random">New Idea</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
   <div class="container-fluid">
     <%= yield %>
   </div>

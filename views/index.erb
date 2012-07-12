@@ -20,7 +20,7 @@
       <td><%= idea[:score] %></td>
       <td>
         <form action="/" method="post" class="form-inline">
-          <input type="hidden" name="vote" value= "up">
+          <input type="hidden" name="direction" value= "up">
           <input type="hidden" name="idea" value= "<%= idea[:idea] %>">
           <input type="hidden" name="categories" value= "<%= idea[:categories] %>">
           <input type="submit" value="Upvote">
@@ -28,7 +28,7 @@
       </td>
       <td>
         <form action="/" method="post" class="form-inline">
-          <input type="hidden" name="vote" value= "down">
+          <input type="hidden" name="direction" value= "down">
           <input type="hidden" name="idea" value= "<%= idea[:idea] %>">
           <input type="hidden" name="categories" value= "<%= idea[:categories] %>">
           <input type="submit" value="Downvote">

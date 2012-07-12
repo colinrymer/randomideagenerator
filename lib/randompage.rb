@@ -1,3 +1,5 @@
+%w( nokogiri open-uri ).each {|lib| require lib}
+
 class RandomPage
   def initialize(pool)
       @pool = pool

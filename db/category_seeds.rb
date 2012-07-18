@@ -1,4 +1,4 @@
-require './lib/database'
+require '../lib/database'
 
 %w(
 Human%E2%80%93computer_interaction

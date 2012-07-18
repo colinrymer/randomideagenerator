@@ -1,0 +1,32 @@
+<div class='page-header'>
+  <h1>All categories</h1>
+</div>
+<p>
+  <form action="/categories" method="post" class="form-inline">
+    <label for="category">New Category</label>
+    <input type="text" name="category" placeholder="e.g. Foods_named_after_places">
+    <input type="submit" value="Add Category" class="btn btn-primary">
+  </form>
+</p>
+<table class='table table-condensed table-striped'>
+  <thead>
+    <tr>
+      <th>Formatted Name</th>
+      <th colspan='2'>Category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @categories.each do |category| %>
+    <tr>
+      <td><%= category.gsub('_', ' ').gsub('%E2%80%93', '-') %></td>
+      <td><%= category %></td>
+      <td>
+        <form action="/categories/<%= category %>" method="post" class="form-inline">
+          <input name="_method" type="hidden" value="delete" />
+          <input type="submit" value="Delete" class="btn btn-small btn-danger">
+        </form>
+      </td>
+    </tr>
+  <% end if @categories %>
+  </tbody>
+</table>

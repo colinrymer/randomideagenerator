@@ -1,4 +1,6 @@
-CATEGORIES = %w(
+require './lib/database'
+
+%w(
 Human%E2%80%93computer_interaction
 Foods_named_after_places
 Skateboarding_tricks
@@ -23,4 +25,6 @@ Creativity
 American_inventions
 Psychoanalytic_terminology
 Cooking_utensils
-)
+).each do |category|
+  Database.add_category(category)
+end

@@ -1,8 +1,8 @@
 %w( nokogiri open-uri ).each {|lib| require lib}
 
 class RandomPage
-  def initialize(pool)
-      @pool = pool
+  def initialize(category)
+    @category = category
   end
 
   def doc
@@ -14,10 +14,10 @@ class RandomPage
   end
 
   def category
-    @category ||= "<a href='#{url}'>#{doc.css('title').children.first.content.split(' - Wikipedia, the free encyclopedia').first.split('Category:').last.sub('%E2%80%93', '-')}</a>"
+    "<a href='#{url}'>#{@category.gsub('_', ' ').gsub('%E2%80%93', '-')}</a>"
   end
 
   def url
-    @url ||= "http://en.wikipedia.org/wiki/Category:#{@pool.sample}"
+    @url ||= "http://en.wikipedia.org/wiki/Category:#{@category}"
   end
 end

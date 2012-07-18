@@ -1,4 +1,4 @@
-require '../lib/database'
+require File.join(File.dirname(__FILE__), "..", "lib", "database")
 
 %w(
 Human%E2%80%93computer_interaction

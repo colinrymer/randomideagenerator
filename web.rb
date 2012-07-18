@@ -27,16 +27,16 @@ get '/random' do
 end
 
 get '/categories' do
-  @categories = Categories.all
+  @categories = Category.all
   erb :categories
 end
 
 post '/categories' do
-  Categories.add(params[:category])
+  Category.add(params[:category])
   redirect request.referrer
 end
 
 delete '/categories/:id' do
-  Categories.remove(params[:id])
+  Category.remove(params[:id])
   redirect request.referrer
 end

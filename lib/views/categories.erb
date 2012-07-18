@@ -4,7 +4,7 @@
 <p>
   <form action="/categories" method="post" class="form-inline">
     <label for="category">New Category</label>
-    <input type="text" name="category" placeholder="e.g. Foods_named_after_places">
+    <input id="new_category" type="text" name="category" placeholder="e.g. Foods_named_after_places">
     <input type="submit" value="Add Category" class="btn btn-primary">
   </form>
 </p>
@@ -23,7 +23,7 @@
       <td>
         <form action="/categories/<%= category %>" method="post" class="form-inline">
           <input name="_method" type="hidden" value="delete" />
-          <input type="submit" value="Delete" class="btn btn-small btn-danger">
+          <input id="<%= category %>_delete_button" type="submit" value="Delete" class="btn btn-small btn-danger">
         </form>
       </td>
     </tr>

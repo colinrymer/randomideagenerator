@@ -11,5 +11,4 @@ group :test do
   gem 'rspec'
   gem 'capybara'
   gem 'mocha'
-  gem 'vcr'
 end

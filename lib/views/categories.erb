@@ -18,7 +18,7 @@
   <tbody>
     <% @categories.each do |category| %>
     <tr>
-      <td><%= category.gsub('_', ' ').gsub('%E2%80%93', '-') %></td>
+      <td><a href='<%= "http://en.wikipedia.org/wiki/Category:#{category}" %>'><%= category.gsub('_', ' ').gsub('%E2%80%93', '-') %></a></td>
       <td><%= category %></td>
       <td>
         <form action="/categories/<%= category %>" method="post" class="form-inline">
